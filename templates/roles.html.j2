@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 5px;
+}
+</style>
+</head>
+<body>
+<p>The following group/prefixes were considered for this overview:
+{%- for f in projects_filter %}
+ <b>{{ f }}</b>{% if not loop.last %},{% endif %}
+{%- endfor %}
+</p>
+<table style="width:100%">
+  <tr>
+    <th>Name</th>
+    <th>Group</th>
+    <th>Description</th>
+    <th>Platforms</th>
+    <th>Versions</th>
+    <th>Tags</th>
+    <th>Used by role</th>
+    <th>Used by play</th>
+  </tr>
+{%- for id,prj in projects_data.items()|sort() %}
+{%- if show_unknown %}
+{%- set show_roles = ["role", "role_extern", "role_unknown"] %}
+{%- else %}
+{%- set show_roles = ["role", "role_extern"] %}
+{%- endif %}
+{%- if prj["state"] in show_roles %}
+  <tr>
+    <td>{% if prj["web_url"] %}<a href="{{ prj["web_url"] }}">{{ prj["name"] }}</a>{% else %}{{ prj["name"] }}{% endif %}</td>
+    <td>{{ prj["group"] }}</td>
+    <td>{{ prj["description"] }}</td>
+    <td>{% if prj["platforms"]|length > 0 %}{{ prj["platforms"]|map(attribute="name")|join(", ") }}{% endif %}</td>
+    {%- if prj["git_tags"]|length > 0 %}
+    <td>
+    {%- for t in prj["git_tags"] %}
+      <a href="{{ prj["web_url"] }}/tree/{{ t }}">{{ t }}</a>{% if not loop.last %},{% endif %}
+    {%- endfor %}
+    </td>
+    {%- else %}
+    <td><!-- no version tags --></td>
+    {%- endif %}
+    <td>{{ prj["galaxy_tags"]|join(',') }}</td>
+    {%- if prj["used_by"]|length > 0 %}
+    <td>
+    {%- for p_id in prj["used_by"] %}
+      {%- if projects_data[p_id]["state"] in ["role", "role_extern"] %}
+        <a href="{{ projects_data[p_id]["web_url"] }}">{{ projects_data[p_id]["name"] }}</a>{% if not loop.last %}</br>{% endif %}
+      {%- endif %}
+    {%- endfor %}
+    </td>
+    {%- else %}
+    <td><!-- not used by any role--></td>
+    {%- endif %}
+    {%- if prj["used_by"]|length > 0 %}
+    <td>
+    {%- for p_id in prj["used_by"] %}
+      {%- if projects_data[p_id]["state"] == "play" %}
+        <a href="{{ projects_data[p_id]["web_url"] }}">{{ projects_data[p_id]["name"] }}</a>{% if not loop.last %}</br>{% endif %}
+      {%- endif %}
+    {%- endfor %}
+    </td>
+    {%- else %}
+    <td><!-- not used by any play --></td>
+    {%- endif %}
+  </tr>
+{%- endif %}
+{%- endfor %}
+</table>
+<p>created at {{ now().strftime("%d.%m.%Y %H:%M:%S") }} UTC</p>
+</body>
+</html>

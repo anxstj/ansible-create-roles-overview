@@ -1,0 +1,6 @@
+pyyaml
+python-gitlab==2.6.0
+requests
+termcolor
+jinja2
+graphviz
