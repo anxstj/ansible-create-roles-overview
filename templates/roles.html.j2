@@ -39,7 +39,7 @@ th, td {
     <td>{% if prj["web_url"] %}<a href="{{ prj["web_url"] }}">{{ prj["name"] }}</a>{% else %}{{ prj["name"] }}{% endif %}</td>
     <td>{{ prj["group"] }}</td>
     <td>{{ prj["description"] }}</td>
-    <td>{% if prj["platforms"] is not none %}{% if prj["platforms"]|length > 0 %}{{ prj["platforms"]|map(attribute="name")|join(", ") }}{% endif %}{% endif %}</td>
+    <td>{% if prj["platforms"]|length > 0 %}{{ prj["platforms"]|map(attribute="name")|join(", ") }}{% endif %}</td>
     {%- if prj["git_tags"]|length > 0 %}
     <td>
     {%- for t in prj["git_tags"] %}
